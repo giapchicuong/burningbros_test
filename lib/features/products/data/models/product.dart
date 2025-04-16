@@ -1,0 +1,22 @@
+import 'package:json_annotation/json_annotation.dart';
+
+import '../../domain/entities/product.dart';
+
+part 'product.g.dart';
+
+@JsonSerializable()
+class ProductModel extends ProductEntity {
+  const ProductModel({
+    required super.id,
+    required super.title,
+    required super.price,
+    required super.thumbnail,
+  });
+
+  factory ProductModel.fromJson(Map<String, dynamic> json) =>
+      _$ProductModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProductModelToJson(this);
+
+  ProductEntity toEntity() => _$ProductModelToEntity(this);
+}
