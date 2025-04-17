@@ -1,3 +1,6 @@
+import 'package:burningbros_test/common/check_connection/presentation/bloc/check_connection_bloc.dart';
+import 'package:burningbros_test/common/check_connection/presentation/page/check_connection_screen.dart';
+import 'package:burningbros_test/core/constants/text_strings.dart';
 import 'package:burningbros_test/features/products/presentation/bloc/products/local/local_products_bloc.dart';
 import 'package:burningbros_test/injection_container.dart';
 import 'package:flutter/material.dart';
@@ -24,19 +27,35 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Burning Bros',
+      title: AppTexts.appName,
       debugShowCheckedModeBanner: false,
       home: MultiBlocProvider(
         providers: [
           BlocProvider(
             create: (context) =>
-                sl<RemoteProductsBloc>()..add(FetchProducts(isLoading: true)),
+                sl<CheckConnectionBloc>()..add(CheckConnectionStart()),
           ),
           BlocProvider<LocalProductsBloc>.value(
             value: sl<LocalProductsBloc>()..add(GetSaveFavoriteProducts()),
           ),
         ],
-        child: const ProductsScreen(),
+        child: BlocBuilder<CheckConnectionBloc, CheckConnectionState>(
+          builder: (context, state) {
+            if (state is CheckConnectionFailure) {
+              return const CheckConnectionScreen();
+            }
+
+            if (state is CheckConnectionLoaded) {
+              return BlocProvider(
+                create: (context) => sl<RemoteProductsBloc>()
+                  ..add(FetchProducts(isLoading: true)),
+                child: const ProductsScreen(),
+              );
+            }
+
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:burningbros_test/core/constants/text_strings.dart';
 import 'package:burningbros_test/features/products/presentation/bloc/products/local/local_products_bloc.dart';
 import 'package:burningbros_test/features/products/presentation/widgets/list_view_products.dart';
 import 'package:flutter/material.dart';
@@ -12,31 +13,30 @@ class ProductsListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final stateLocalProductsBloc = context.watch<LocalProductsBloc>().state;
+    final stateLocal = context.watch<LocalProductsBloc>().state;
+
+    final productsFavorite = stateLocal is LocalProductsLoaded
+        ? stateLocal.products
+        : <ProductEntity>[];
+
     return Expanded(
-        child: BlocBuilder<RemoteProductsBloc, RemoteProductsState>(
-            buildWhen: (previous, current) => previous != current,
-            builder: (context, state) {
-              var widgets = (switch (state) {
-                RemoteProductsLoading() => _buildLoadingWidget(),
-                RemoteProductsLoaded(
-                  products: final products,
-                  hasReachedEnd: final hasReachedEnd
-                ) =>
-                  products.isEmpty
-                      ? _buildEmptyWidget()
-                      : _buildInitialWidget(
-                          products,
-                          stateLocalProductsBloc is LocalProductsLoaded
-                              ? stateLocalProductsBloc.products
-                              : [],
-                          hasReachedEnd),
-                RemoteProductsError(message: final msg) =>
-                  _buildErrorWidget(msg),
-                _ => Container(),
-              });
-              return widgets;
-            }));
+      child: BlocBuilder<RemoteProductsBloc, RemoteProductsState>(
+        buildWhen: (previous, current) => previous != current,
+        builder: (context, state) => switch (state) {
+          RemoteProductsLoading() => _buildLoadingWidget(),
+          RemoteProductsError(message: final msg) => _buildErrorWidget(msg),
+          RemoteProductsLoaded(
+            products: final products,
+            hasReachedEnd: final hasReachedEnd
+          ) =>
+            products.isEmpty
+                ? _buildEmptyWidget()
+                : _buildInitialWidget(
+                    products, productsFavorite, hasReachedEnd),
+          _ => const SizedBox.shrink(),
+        },
+      ),
+    );
   }
 
   Widget _buildInitialWidget(List<ProductEntity> products,
@@ -50,18 +50,19 @@ class ProductsListCard extends StatelessWidget {
   }
 
   Widget _buildEmptyWidget() {
-    return const Center(child: Text('No products available.'));
+    return const Center(child: Text(AppTexts.noProductsAvailable));
   }
 
   Widget _buildErrorWidget(String message) {
     return Center(
       child: Text(
         message,
-        style: TextStyle(color: Colors.red),
+        style: const TextStyle(color: Colors.red),
       ),
     );
   }
 
-  Widget _buildLoadingWidget() =>
-      const Center(child: CircularProgressIndicator());
+  Widget _buildLoadingWidget() {
+    return const Center(child: CircularProgressIndicator());
+  }
 }

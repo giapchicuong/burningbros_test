@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../../common/state/pagination_state.dart';
 import '../../../../data/models/product_pagination_query.dart';
 import '../../../../data/models/product_search_query.dart';
 import '../../../../domain/entities/product.dart';
@@ -10,7 +11,8 @@ import '../../../../domain/usecases/search_products.dart';
 part 'remote_products_event.dart';
 part 'remote_products_state.dart';
 
-class RemoteProductsBloc extends Bloc<RemoteProductsEvent, RemoteProductsState> {
+class RemoteProductsBloc
+    extends Bloc<RemoteProductsEvent, RemoteProductsState> {
   final GetProducts getProducts;
   final SearchProducts searchProducts;
 
@@ -21,101 +23,77 @@ class RemoteProductsBloc extends Bloc<RemoteProductsEvent, RemoteProductsState> 
     on<FetchProducts>(_onFetchProducts);
     on<FetchSearchProducts>(_onFetchSearchProducts);
   }
-  int skip = 0;
+
   final int limit = 20;
-  bool hasReachedEnd = false;
-  bool isFetching = false;
-  int searchSkip = 0;
-  bool hasReachedSearchEnd = false;
-  bool isSearching = false;
 
-  List<ProductEntity> allProducts = [];
-  List<ProductEntity> allProductsSearch = [];
+  final PaginationState<ProductEntity> pagination =
+      PaginationState<ProductEntity>();
+  final PaginationState<ProductEntity> searchPagination =
+      PaginationState<ProductEntity>();
 
-  void _onFetchProducts(
+  Future<void> _onFetchProducts(
       FetchProducts event, Emitter<RemoteProductsState> emit) async {
-    if (hasReachedEnd || isFetching) return;
+    if (pagination.hasReachedEnd || pagination.isFetching) return;
 
-    _handleFetching();
-
+    pagination.startFetching();
     if (event.isLoading) emit(RemoteProductsLoading());
 
     final result = await getProducts(
-        ProductPaginationQueryModel(limit: limit, skip: skip));
-
-    result.fold((failure) {
-      _handleCancelFetching();
-      emit(RemoteProductsError(failure.toString()));
-    }, (newProducts) {
-      _handleUpdatePagination(allProducts, newProducts);
-      emit(RemoteProductsLoaded(
-          products: allProducts, hasReachedEnd: hasReachedEnd));
-    });
-  }
-
-  void _onFetchSearchProducts(
-      FetchSearchProducts event, Emitter<RemoteProductsState> emit) async {
-    if (event.query.trim().isEmpty) {
-      emit(RemoteProductsLoaded(
-          products: allProducts, hasReachedEnd: hasReachedEnd));
-      return;
-    }
-
-    if (hasReachedSearchEnd || isFetching) return;
-
-    _handleFetching();
-
-    if (event.isLoading) {
-      emit(RemoteProductsLoading());
-      _handleResetSearchPagination();
-    }
-
-    final result = await searchProducts(
-      ProductSearchQueryModel(
-          query: event.query, limit: limit, skip: searchSkip),
-    );
+        ProductPaginationQueryModel(limit: limit, skip: pagination.skip));
 
     result.fold(
       (failure) {
-        _handleCancelFetching();
+        pagination.stopFetching();
         emit(RemoteProductsError(failure.toString()));
       },
       (newProducts) {
-        _handleUpdateSearchPagination(allProductsSearch, newProducts);
+        pagination.update(newProducts, limit);
         emit(RemoteProductsLoaded(
-            products: allProductsSearch, hasReachedEnd: hasReachedSearchEnd));
+          products: pagination.items,
+          hasReachedEnd: pagination.hasReachedEnd,
+        ));
       },
     );
   }
 
-  void _handleUpdateSearchPagination(
-      List<ProductEntity> oldProducts, List<ProductEntity> newProducts) {
-    hasReachedSearchEnd = newProducts.length < limit;
-    allProductsSearch = [...oldProducts, ...newProducts];
-    searchSkip += limit;
-    _handleCancelFetching();
-  }
+  Future<void> _onFetchSearchProducts(
+      FetchSearchProducts event, Emitter<RemoteProductsState> emit) async {
+    if (event.query.trim().isEmpty) {
+      searchPagination.reset();
+      emit(RemoteProductsLoaded(
+        products: pagination.items,
+        hasReachedEnd: pagination.hasReachedEnd,
+      ));
+      return;
+    }
 
-  void _handleUpdatePagination(
-      List<ProductEntity> oldProducts, List<ProductEntity> newProducts) {
-    hasReachedEnd = newProducts.length < limit;
-    allProducts = [...oldProducts, ...newProducts];
-    skip += limit;
-    _handleCancelFetching();
-  }
+    if (event.isLoading) {
+      emit(RemoteProductsLoading());
+      searchPagination.reset();
+    }
 
-  void _handleResetSearchPagination() {
-    searchSkip = 0;
-    hasReachedSearchEnd = false;
-    isFetching = false;
-    allProductsSearch = [];
-  }
+    if (searchPagination.hasReachedEnd || searchPagination.isFetching) return;
 
-  void _handleCancelFetching() {
-    isFetching = false;
-  }
+    searchPagination.startFetching();
 
-  void _handleFetching() {
-    isFetching = true;
+    final result = await searchProducts(ProductSearchQueryModel(
+      query: event.query,
+      limit: limit,
+      skip: searchPagination.skip,
+    ));
+
+    result.fold(
+      (failure) {
+        searchPagination.stopFetching();
+        emit(RemoteProductsError(failure.toString()));
+      },
+      (newProducts) {
+        searchPagination.update(newProducts, limit);
+        emit(RemoteProductsLoaded(
+          products: searchPagination.items,
+          hasReachedEnd: searchPagination.hasReachedEnd,
+        ));
+      },
+    );
   }
 }

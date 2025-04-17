@@ -1,3 +1,4 @@
+import 'package:burningbros_test/core/constants/text_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,42 +12,36 @@ class ProductsFavoriteListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LocalProductsBloc, LocalProductsState>(
-        buildWhen: (previous, current) => previous != current,
-        builder: (context, state) {
-          var widgets = (switch (state) {
-            LocalProductsLoading() => _buildLoadingWidget(),
-            LocalProductsLoaded(
-              products: final products,
-            ) =>
-              products.isEmpty
-                  ? _buildEmptyWidget()
-                  : _buildInitialWidget(products),
-            LocalProductsError(message: final msg) => _buildErrorWidget(msg),
-            _ => Container(),
-          });
-          return widgets;
-        });
-  }
-
-  Widget _buildInitialWidget(List<ProductEntity> products) {
-    return ListViewProductFavorite(
-      products: products,
+      buildWhen: (previous, current) => previous != current,
+      builder: (context, state) => switch (state) {
+        LocalProductsLoading() => _buildLoadingWidget(),
+        LocalProductsError(message: final msg) => _buildErrorWidget(msg),
+        LocalProductsLoaded(products: final products) => products.isEmpty
+            ? _buildEmptyWidget()
+            : _buildInitialWidget(products),
+        _ => const SizedBox.shrink(),
+      },
     );
   }
 
+  Widget _buildInitialWidget(List<ProductEntity> products) {
+    return ListViewProductFavorite(products: products);
+  }
+
   Widget _buildEmptyWidget() {
-    return const Center(child: Text('No products available.'));
+    return const Center(child: Text(AppTexts.noProductsAvailable));
   }
 
   Widget _buildErrorWidget(String message) {
     return Center(
       child: Text(
         message,
-        style: TextStyle(color: Colors.red),
+        style: const TextStyle(color: Colors.red),
       ),
     );
   }
 
-  Widget _buildLoadingWidget() =>
-      const Center(child: CircularProgressIndicator());
+  Widget _buildLoadingWidget() {
+    return const Center(child: CircularProgressIndicator());
+  }
 }

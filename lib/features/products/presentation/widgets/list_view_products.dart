@@ -3,6 +3,7 @@ import 'package:burningbros_test/features/products/presentation/widgets/product_
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/constants/sizes.dart';
 import '../../domain/entities/product.dart';
 
 class ListViewProduct extends StatelessWidget {
@@ -21,6 +22,7 @@ class ListViewProduct extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<LocalProductsBloc>();
+
     void handleFavorite(ProductEntity productEntity, bool isFavorite) {
       if (isFavorite) {
         bloc.add(RemoveSaveFavoriteProduct(id: productEntity.id));
@@ -32,31 +34,36 @@ class ListViewProduct extends StatelessWidget {
     return ListView.separated(
       controller: scrollController,
       itemCount: products.length + 1,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      separatorBuilder: (_, __) => const SizedBox(height: AppSizes.sm),
       itemBuilder: (context, index) {
         if (index < products.length) {
           final data = products[index];
           final bool isFavorite =
               productsFavorite.any((element) => element.id == data.id);
-          return RepaintBoundary(
-              child: ProductCard(
-            isShowFavorite: true,
-            product: data,
-            isFavorite: isFavorite,
-            onTap: () => handleFavorite(data, isFavorite),
-          ));
+          return _buildProductCard(data, isFavorite, handleFavorite);
         } else {
           return hasReachedEnd
               ? const SizedBox.shrink()
-              : Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: _buildLoadingWidget(),
-                );
+              : _buildLoadingWidget();
         }
       },
     );
   }
 
-  Widget _buildLoadingWidget() =>
-      const Center(child: CircularProgressIndicator());
+  Widget _buildProductCard(ProductEntity product, bool isFavorite,
+      void Function(ProductEntity, bool) onTap) {
+    return RepaintBoundary(
+      child: ProductCard(
+        isShowFavorite: true,
+        product: product,
+        isFavorite: isFavorite,
+        onTap: () => onTap(product, isFavorite),
+      ),
+    );
+  }
+
+  Widget _buildLoadingWidget() => Padding(
+        padding: EdgeInsets.symmetric(vertical: AppSizes.md),
+        child: const Center(child: CircularProgressIndicator()),
+      );
 }

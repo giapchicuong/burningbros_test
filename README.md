@@ -1,16 +1,35 @@
-# burningbros_test
+# BurningBros Test Project
 
-A new Flutter project.
+## Setup Instructions
 
-## Getting Started
+### 1. Clone the repository
 
-This project is a starting point for a Flutter application.
+First, clone the repository:
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+git clone https://github.com/giapchicuong/burningbros_test.git
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+After cloning the repository, navigate into the project folder:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+cd burningbros_test
+```
+
+### 2. Install dependencies
+
+Next, run the following command to install the required dependencies defined in the `pubspec.yaml` file:
+
+```bash
+flutter pub get
+```
+
+This will download and set up all the necessary packages for the project.
+
+### 3. Run the application
+
+Once the dependencies are installed, you can run the Flutter application using the following command:
+
+```bash
+flutter run
+```

@@ -1,6 +1,8 @@
+import 'package:burningbros_test/core/constants/text_strings.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../common/widgets/cached_image.dart';
+import '../../../../core/constants/sizes.dart';
 import '../../domain/entities/product.dart';
 
 class ProductCard extends StatelessWidget {
@@ -24,23 +26,29 @@ class ProductCard extends StatelessWidget {
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSizes.radiusBase),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
+        contentPadding: const EdgeInsets.all(AppSizes.base),
         leading: CachedImage(imageUrl: product.thumbnail),
         title: Text(product.title),
-        subtitle: Text('Price: ${product.price}'),
-        trailing: isShowRemoveFavorite
-            ? Icon(Icons.remove_circle_outline_rounded)
-            : isShowFavorite
-                ? Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_outline_sharp,
-                    color: isFavorite ? Colors.red : Colors.grey,
-                  )
-                : SizedBox.shrink(),
+        subtitle: Text('${AppTexts.price}: ${product.price}'),
+        trailing: _buildTrailing(),
         onTap: onTap,
       ),
     );
+  }
+
+  Widget _buildTrailing() {
+    if (isShowRemoveFavorite) {
+      return Icon(Icons.remove_circle_outline_rounded);
+    } else if (isShowFavorite) {
+      return Icon(
+        isFavorite ? Icons.favorite : Icons.favorite_outline_sharp,
+        color: isFavorite ? Colors.red : Colors.grey,
+      );
+    } else {
+      return SizedBox.shrink();
+    }
   }
 }

@@ -1,8 +1,10 @@
+import 'package:burningbros_test/core/constants/text_strings.dart';
 import 'package:burningbros_test/features/products/presentation/pages/products_favorite_screen.dart';
 import 'package:burningbros_test/features/products/presentation/widgets/products_list_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/constants/sizes.dart';
 import '../bloc/products/remote/remote_products_bloc.dart';
 import '../widgets/product_input_search.dart';
 
@@ -40,9 +42,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    void handleGoProductFavorite() {
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => ProductsFavoriteScreen()));
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Burning Bros'),
+        title: const Text(AppTexts.appName),
         backgroundColor: Colors.grey.withOpacity(0.2),
         centerTitle: true,
         actions: [
@@ -51,19 +58,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
               Icons.favorite,
               color: Colors.redAccent,
             ),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ProductsFavoriteScreen()));
-            },
+            onPressed: handleGoProductFavorite,
           ),
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(AppSizes.md),
         child: Column(
           children: [
             ProductInputSearch(textController: _textController),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSizes.md),
             ProductsListCard(scrollController: _scrollController),
           ],
         ),

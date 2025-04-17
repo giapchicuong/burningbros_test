@@ -37,7 +37,12 @@ dependencies:
   logger: ^2.5.0
 
   dartz: ^0.10.1
+
+  # Cached Image
   cached_network_image: ^3.4.1
+
+  # Check Connect
+  connectivity_plus: ^5.0.1
 
 
 dev_dependencies:

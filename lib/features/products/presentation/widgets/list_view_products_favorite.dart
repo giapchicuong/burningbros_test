@@ -2,6 +2,7 @@ import 'package:burningbros_test/features/products/presentation/widgets/product_
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/constants/sizes.dart';
 import '../../domain/entities/product.dart';
 import '../bloc/products/local/local_products_bloc.dart';
 
@@ -16,13 +17,14 @@ class ListViewProductFavorite extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<LocalProductsBloc>();
+
     void handleRemove(ProductEntity productEntity) {
       bloc.add(RemoveSaveFavoriteProduct(id: productEntity.id));
     }
 
     return ListView.separated(
       itemCount: products.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      separatorBuilder: (_, __) => const SizedBox(height: AppSizes.sm),
       itemBuilder: (context, index) {
         final data = products[index];
         return RepaintBoundary(

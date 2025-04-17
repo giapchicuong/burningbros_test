@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/constants/sizes.dart';
+
 class CachedImage extends StatelessWidget {
   final String imageUrl;
   final double width;
@@ -10,9 +12,9 @@ class CachedImage extends StatelessWidget {
   const CachedImage({
     super.key,
     required this.imageUrl,
-    this.width = 60,
-    this.height = 60,
-    this.borderRadius = 8,
+    this.width = AppSizes.defaultCachedImage,
+    this.height = AppSizes.defaultCachedImage,
+    this.borderRadius = AppSizes.radiusMd,
   });
 
   @override
