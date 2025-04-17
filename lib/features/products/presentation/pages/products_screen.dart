@@ -1,78 +1,73 @@
-import 'package:burningbros_test/features/products/domain/entities/product.dart';
-import 'package:burningbros_test/features/products/presentation/bloc/product/remote/products/products_bloc.dart';
+import 'package:burningbros_test/features/products/presentation/pages/products_favorite_screen.dart';
+import 'package:burningbros_test/features/products/presentation/widgets/products_list_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../widgets/product_card.dart';
+import '../bloc/products/remote/remote_products_bloc.dart';
+import '../widgets/product_input_search.dart';
 
-class ProductsScreen extends StatelessWidget {
+class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final textController = TextEditingController();
-    final state = context.watch<ProductsBloc>().state;
+  State<ProductsScreen> createState() => _ProductsScreenState();
+}
 
-    var widgets = (switch (state) {
-      ProductsLoading() => _buildLoadingWidget(),
-      ProductsLoaded(products: final products) =>
-        products.isEmpty ? _buildEmptyWidget() : _buildInitialWidget(products),
-      ProductsError(message: final msg) => _buildErrorWidget(msg),
-      _ => Container(),
+class _ProductsScreenState extends State<ProductsScreen> {
+  final _textController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    final bloc = context.read<RemoteProductsBloc>();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        _textController.text.trim().isNotEmpty
+            ? bloc.add(FetchSearchProducts(query: _textController.text))
+            : bloc.add(FetchProducts());
+      }
     });
+  }
 
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Burning Bros'),
-        backgroundColor: Colors.grey,
+        backgroundColor: Colors.grey.withOpacity(0.2),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.favorite,
+              color: Colors.redAccent,
+            ),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => ProductsFavoriteScreen()));
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextFormField(
-              controller: textController,
-              decoration: InputDecoration(
-                hintText: 'Tìm sản phẩm...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
+            ProductInputSearch(textController: _textController),
             const SizedBox(height: 16),
-            Expanded(child: widgets),
+            ProductsListCard(scrollController: _scrollController),
           ],
         ),
       ),
     );
   }
-
-  ListView _buildInitialWidget(List<ProductEntity> products) {
-    return ListView.separated(
-      itemCount: products.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
-      itemBuilder: (context, index) {
-        final product = products[index];
-        return ProductCard(product: product);
-      },
-    );
-  }
-
-  Center _buildEmptyWidget() {
-    return const Center(child: Text('Không có sản phẩm nào.'));
-  }
-
-  Center _buildErrorWidget(String message) {
-    return Center(
-      child: Text(
-        message,
-        style: TextStyle(color: Colors.red),
-      ),
-    );
-  }
-
-  Center _buildLoadingWidget() =>
-      const Center(child: CircularProgressIndicator());
 }

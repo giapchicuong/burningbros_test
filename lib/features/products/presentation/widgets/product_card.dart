@@ -7,9 +7,17 @@ class ProductCard extends StatelessWidget {
   const ProductCard({
     super.key,
     required this.product,
+    this.onTap,
+    this.isFavorite = false,
+    this.isShowFavorite = false,
+    this.isShowRemoveFavorite = false,
   });
 
   final ProductEntity product;
+  final bool isFavorite;
+  final bool isShowFavorite;
+  final bool isShowRemoveFavorite;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +31,15 @@ class ProductCard extends StatelessWidget {
         leading: CachedImage(imageUrl: product.thumbnail),
         title: Text(product.title),
         subtitle: Text('Price: ${product.price}'),
-        onTap: () {},
+        trailing: isShowRemoveFavorite
+            ? Icon(Icons.remove_circle_outline_rounded)
+            : isShowFavorite
+                ? Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_outline_sharp,
+                    color: isFavorite ? Colors.red : Colors.grey,
+                  )
+                : SizedBox.shrink(),
+        onTap: onTap,
       ),
     );
   }
