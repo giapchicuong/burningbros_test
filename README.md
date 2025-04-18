@@ -87,15 +87,3 @@ flutter doctor
 
 This will help identify any missing dependencies or configuration issues.
 
-## Dependencies
-
-The project uses the following dependencies:
-
-- `flutter_bloc`: State management using Bloc pattern.
-- `dio`: HTTP requests for fetching data from the API.
-- `hive`: Local database for storing favorite products.
-- `cached_network_image`: To cache and display images efficiently.
-- `connectivity_plus`: To check network connectivity.
-- `json_serializable` and `freezed`: For serialization of data from API.
-
-You can find more details about these dependencies in the `pubspec.yaml` file.

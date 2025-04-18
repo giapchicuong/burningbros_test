@@ -3,6 +3,7 @@ import 'package:burningbros_test/common/check_connection/presentation/page/check
 import 'package:burningbros_test/core/constants/text_strings.dart';
 import 'package:burningbros_test/features/products/presentation/bloc/products/local/local_products_bloc.dart';
 import 'package:burningbros_test/injection_container.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -14,9 +15,17 @@ import 'features/products/presentation/pages/products_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter((await getApplicationDocumentsDirectory()).path);
+
+  if (!kIsWeb) {
+    final dir = await getApplicationDocumentsDirectory();
+    await Hive.initFlutter(dir.path);
+  } else {
+    await Hive.initFlutter();
+  }
+
   Hive.registerAdapter(ProductModelAdapter());
   final productBox = await Hive.openBox<ProductModel>('products');
+
   setupServiceLocator(productBox);
   runApp(const MyApp());
 }
