@@ -17,7 +17,7 @@ ProductSearchQueryModel _$ProductSearchQueryModelFromJson(
 Map<String, dynamic> _$ProductSearchQueryModelToJson(
         ProductSearchQueryModel instance) =>
     <String, dynamic>{
-      'q': instance.query,
+      'query': instance.query,
       'limit': instance.limit,
       'skip': instance.skip,
     };
