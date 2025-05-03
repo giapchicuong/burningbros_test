@@ -9,7 +9,7 @@ part of 'product_search_query.dart';
 ProductSearchQueryModel _$ProductSearchQueryModelFromJson(
         Map<String, dynamic> json) =>
     ProductSearchQueryModel(
-      query: json['query'] as String,
+      query: json['q'] as String,
       limit: (json['limit'] as num).toInt(),
       skip: (json['skip'] as num).toInt(),
     );
@@ -17,7 +17,7 @@ ProductSearchQueryModel _$ProductSearchQueryModelFromJson(
 Map<String, dynamic> _$ProductSearchQueryModelToJson(
         ProductSearchQueryModel instance) =>
     <String, dynamic>{
-      'query': instance.query,
+      'q': instance.query,
       'limit': instance.limit,
       'skip': instance.skip,
     };

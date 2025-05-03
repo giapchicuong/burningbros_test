@@ -4,6 +4,7 @@ part 'product_search_query.g.dart';
 
 @JsonSerializable()
 class ProductSearchQueryModel {
+  @JsonKey(name: 'q')
   final String query;
   final int limit;
   final int skip;
