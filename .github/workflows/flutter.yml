@@ -1,0 +1,30 @@
+name: Flutter CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # Chạy trên môi trường Ubuntu
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.6.1'  # Phiên bản Flutter bạn đang sử dụng
+
+      - name: Install dependencies
+        run: |
+          flutter pub get  # Cài đặt các dependencies
+          flutter pub run build_runner build --delete-conflicting-outputs  # Chạy build_runner để tạo mã tự động cho json_serializable và hive
+
+      - name: Run tests
+        run: flutter test  # Chạy các bài kiểm tra của bạn
