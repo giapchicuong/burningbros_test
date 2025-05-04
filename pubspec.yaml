@@ -17,7 +17,7 @@ dependencies:
   dio: ^5.4.0
 
   # state management:
-  flutter_bloc: ^8.1.2
+  flutter_bloc: ^9.1.1
 
   # comparing dart objects
   equatable: ^2.0.5
