@@ -31,7 +31,7 @@ void main() {
   final tSearchQueryParams = tSearchProductQuery.toJson();
 
   final sampleApiResponse = {
-    "productsss": [
+    "products": [
       {
         "id": 1,
         "title": "Essence Mascara Lash Princess",
