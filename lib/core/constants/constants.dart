@@ -1,5 +1,7 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class ApiUrls {
-  static const baseURL = 'https://dummyjson.com';
-  static const products = '$baseURL/products';
-  static const searchProducts = '$products/search';
+  static String get baseURL => dotenv.env['BASE_URL'] ?? '';
+  static String get products => '$baseURL/products';
+  static String get searchProducts => '$products/search';
 }

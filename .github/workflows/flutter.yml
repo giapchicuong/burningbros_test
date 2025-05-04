@@ -1,13 +1,12 @@
-name: "CI/CD"
+name: CI/CD
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   build:
-    name: Run flutter test and analyze
+    name: Run Flutter analyze & test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -18,37 +17,33 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: "stable"
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+            android/.gradle
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-flutter-
+
+      - name: Set up .env
+        run: echo "${{ secrets.ENV_FILE }}" > .env
+
       - run: flutter pub get
+
+      - name: Check formatting
+        run: dart format . --set-exit-if-changed || true
+
       - run: flutter analyze --no-fatal-infos --no-fatal-warnings
       - run: flutter test
 
-  build_ios:
-    name: Build Flutter (iOS)
-    needs: [build]
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: "stable"
-      - run: flutter pub get
-      - run: flutter clean
-
-      - name: Create .env
-        run: |
-          echo "API_URL=${{ secrets.ENV_API_URL }}" >> .env
-          echo "API_KEY=${{ secrets.ENV_API_KEY }}" >> .env
-
-      - run: flutter build ios --release --no-codesign
-
-  build_appbundle:
-    name: Build Flutter (Android AppBundle)
-    needs: [build]
+  build_android_aab:
+    name: Build Android AAB
+    needs: [ build ]
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v3
@@ -58,20 +53,25 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: "stable"
+
+      - name: Set up .env
+        run: echo "${{ secrets.ENV_FILE }}" > .env
+
       - run: flutter pub get
       - run: flutter clean
-
-      - name: Create .env
-        run: |
-          echo "API_URL=${{ secrets.ENV_API_URL }}" >> .env
-          echo "API_KEY=${{ secrets.ENV_API_KEY }}" >> .env
-
       - run: flutter build appbundle --release
 
-  build_app_apk:
-    name: Build Flutter Apk (Android)
-    needs: [build]
+      - name: Upload AAB Artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: app-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+
+  build_android_apk:
+    name: Build Android APK
+    needs: [ build ]
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v3
@@ -81,12 +81,38 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: "stable"
+
+      - name: Set up .env
+        run: echo "${{ secrets.ENV_FILE }}" > .env
+
       - run: flutter pub get
       - run: flutter clean
-
-      - name: Create .env
-        run: |
-          echo "API_URL=${{ secrets.ENV_API_URL }}" >> .env
-          echo "API_KEY=${{ secrets.ENV_API_KEY }}" >> .env
-
       - run: flutter build apk --release
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  build_ios:
+    name: Build iOS
+    needs: [ build ]
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: "stable"
+
+      - name: Set up .env
+        run: echo "${{ secrets.ENV_FILE }}" > .env
+
+      - run: flutter pub get
+      - run: flutter clean
+      - run: flutter build ios --release --no-codesign
