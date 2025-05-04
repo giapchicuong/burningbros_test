@@ -6,6 +6,7 @@ import 'package:burningbros_test/injection_container.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -15,7 +16,7 @@ import 'features/products/presentation/pages/products_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await dotenv.load();
   if (!kIsWeb) {
     final dir = await getApplicationDocumentsDirectory();
     await Hive.initFlutter(dir.path);
