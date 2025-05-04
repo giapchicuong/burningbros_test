@@ -6,6 +6,7 @@ import 'package:burningbros_test/features/products/data/data_sources/remote/prod
 import 'package:burningbros_test/features/products/data/models/product_pagination_query.dart';
 import 'package:burningbros_test/features/products/data/models/product_search_query.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -17,7 +18,8 @@ void main() {
   late ProductsApiService dataSource;
   late MockDioClient mockDioClient;
 
-  setUp(() {
+  setUp(() async {
+    await dotenv.load();
     mockDioClient = MockDioClient();
     dataSource = ProductsApiServiceImpl(client: mockDioClient);
   });
