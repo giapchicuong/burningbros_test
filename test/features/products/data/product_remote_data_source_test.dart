@@ -18,14 +18,18 @@ void main() {
   late ProductsApiService dataSource;
   late MockDioClient mockDioClient;
 
+  late String tProductPaginationUrl;
+  late String tSearchProductPaginationUrl;
+
   setUp(() async {
     await dotenv.load();
     mockDioClient = MockDioClient();
     dataSource = ProductsApiServiceImpl(client: mockDioClient);
+
+    tProductPaginationUrl = ApiUrls.products;
+    tSearchProductPaginationUrl = ApiUrls.searchProducts;
   });
 
-  final tProductPaginationUrl = ApiUrls.products;
-  final tSearchProductPaginationUrl = ApiUrls.searchProducts;
   final tProductQuery = ProductPaginationQueryModel(limit: 20, skip: 0);
   final tSearchProductQuery =
       ProductSearchQueryModel(query: 'bike', limit: 20, skip: 0);
