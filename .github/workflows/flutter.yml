@@ -115,7 +115,7 @@ jobs:
 
       - run: flutter pub get
       - run: flutter clean
-      - run: flutter build ipa --release --export-options-plist=ExportOptions.plist
+      - run: flutter build ipa --release 
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4.6.2
