@@ -37,6 +37,9 @@ jobs:
           cat .env
           echo "----------------------"
 
+      - name: Read first line of .env
+        run: head -n 1 .env
+
       - run: flutter pub get
 
       - name: Check formatting
