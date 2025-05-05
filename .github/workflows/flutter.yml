@@ -36,8 +36,8 @@ jobs:
           echo "---- .env content ----"
           cat .env
           echo "----------------------"
-          
-          - run: flutter pub get
+
+      - run: flutter pub get
 
       - name: Check formatting
         run: dart format . --set-exit-if-changed || true
