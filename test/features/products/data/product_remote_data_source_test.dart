@@ -22,7 +22,7 @@ void main() {
   late String tSearchProductPaginationUrl;
 
   setUp(() async {
-    await dotenv.load();
+    await dotenv.load(fileName: ".env");
     mockDioClient = MockDioClient();
     dataSource = ProductsApiServiceImpl(client: mockDioClient);
 

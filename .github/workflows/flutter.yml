@@ -31,8 +31,14 @@ jobs:
       - name: Set up .env
         run: echo "${{ secrets.ENV_FILE }}" > .env
 
-      - name: Debug print .env content
-        run: cat .env
+      - name: Debug .env content
+        run: |
+          echo "---- .env content ----"
+          cat .env
+          echo "----------------------"
+
+      - name: Read first line of .env
+        run: head -n 1 .env
 
       - run: flutter pub get
 

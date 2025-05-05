@@ -16,7 +16,7 @@ import 'features/products/presentation/pages/products_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load();
+  await dotenv.load(fileName: ".env");
   if (!kIsWeb) {
     final dir = await getApplicationDocumentsDirectory();
     await Hive.initFlutter(dir.path);
