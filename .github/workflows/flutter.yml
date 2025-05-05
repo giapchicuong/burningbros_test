@@ -31,10 +31,13 @@ jobs:
       - name: Set up .env
         run: echo "${{ secrets.ENV_FILE }}" > .env
 
-      - name: Debug print .env content
-        run: cat .env
-
-      - run: flutter pub get
+      - name: Debug .env content
+        run: |
+          echo "---- .env content ----"
+          cat .env
+          echo "----------------------"
+          
+          - run: flutter pub get
 
       - name: Check formatting
         run: dart format . --set-exit-if-changed || true
