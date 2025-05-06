@@ -31,15 +31,6 @@ jobs:
       - name: Set up .env
         run: echo "${{ secrets.ENV_FILE }}" > .env
 
-      - name: Debug .env content
-        run: |
-          echo "---- .env content ----"
-          cat .env
-          echo "----------------------"
-
-      - name: Read first line of .env
-        run: head -n 1 .env
-
       - run: flutter pub get
 
       - name: Check formatting
@@ -68,6 +59,18 @@ jobs:
 
       - run: flutter pub get
       - run: flutter clean
+
+      - name: Decode keystore from base64
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
+
+      - name: Create key.properties
+        run: |
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=upload-keystore.jks" >> android/key.properties
+
+
       - run: flutter build appbundle --release
 
       - name: Upload AAB Artifact
@@ -96,6 +99,17 @@ jobs:
 
       - run: flutter pub get
       - run: flutter clean
+
+      - name: Decode keystore from base64
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
+
+      - name: Create key.properties
+        run: |
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=upload-keystore.jks" >> android/key.properties
+
       - run: flutter build apk --release
 
       - name: Upload APK Artifact
