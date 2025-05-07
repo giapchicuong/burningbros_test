@@ -1,0 +1,42 @@
+name: Upload Artifacts to GitHub Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  upload_to_github_release:
+    name: Upload Artifacts to GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download APK
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release-apk
+          path: artifacts/
+
+      - name: Download AAB
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release-aab
+          path: artifacts/
+
+      - name: Download iOS App
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-app
+          path: artifacts/
+
+      - name: Display downloaded files
+        run: ls -R artifacts
+
+      - name: Upload artifacts to GitHub Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: artifacts/**
+          tag: ${{ github.ref_name }}
+          overwrite: true
+          file_glob: true
+          body: "📦 Release ${{ github.ref_name }} build artifacts (AAB, APK, IPA)"
