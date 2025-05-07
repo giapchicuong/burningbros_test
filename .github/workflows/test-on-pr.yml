@@ -5,7 +5,7 @@ on:
     branches: [main,develop]
 
 jobs:
-  check_code:
+  build:
     name: Check Code Quality on PR
     runs-on: ubuntu-latest
     steps:
@@ -27,6 +27,9 @@ jobs:
             android/.gradle
           key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
           restore-keys: ${{ runner.os }}-flutter-
+
+      - name: Set up .env
+        run: echo "${{ secrets.ENV_FILE }}" > .env
 
       - run: flutter pub get
 
