@@ -149,6 +149,10 @@ jobs:
   upload_to_github_release:
     name: Upload Artifacts to GitHub Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      actions: read
     needs: [check_code,build_android_aab,build_android_apk,build_ios]
     steps:
       - name: Download APK
