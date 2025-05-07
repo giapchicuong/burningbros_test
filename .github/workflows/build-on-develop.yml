@@ -8,7 +8,7 @@ on:
 
 jobs:
   check_code:
-    name: Run Flutter analyze & test
+    name: Build Artifacts on Develop
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

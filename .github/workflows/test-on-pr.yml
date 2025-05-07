@@ -6,7 +6,7 @@ on:
 
 jobs:
   check_code:
-    name: Run Flutter analyze & test
+    name: Check Code Quality on PR
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
