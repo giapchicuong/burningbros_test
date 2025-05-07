@@ -2,10 +2,10 @@ name: Check Code Quality on PR
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main,develop]
 
 jobs:
-  check_code:
+  build:
     name: Check Code Quality on PR
     runs-on: ubuntu-latest
     steps:
