@@ -140,11 +140,16 @@ jobs:
       - run: flutter clean
       - run: flutter build ipa --release --no-codesign
 
+      - name: Zip iOS app
+        run: |
+          cd build/ios/iphoneos
+          zip -r Runner.app.zip Runner.app
+
       - name: Upload iOS app artifact
         uses: actions/upload-artifact@v4.6.2
         with:
           name: ios-app
-          path: build/ios/iphoneos/Runner.app
+          path: build/ios/iphoneos/Runner.app.zip
 
   upload_to_github_release:
     name: Upload Artifacts to GitHub Release
