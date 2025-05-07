@@ -1,4 +1,4 @@
-name: Build Artifacts on Develop
+name: Check Code Quality on PR and Build Artifacts on Develop
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   check_code:
-    name: Build Artifacts on Develop
+    name: Check Code Quality on PR
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
