@@ -31,7 +31,7 @@ class ProductRepositoryImpl extends ProductRepository {
   }
 
   @override
-  Future<Either<Failure, List<ProductEntity>>> searchProducts(
+  Future<Either<ServerFailure, List<ProductEntity>>> searchProducts(
       ProductSearchQueryModel productSearchQuery) async {
     try {
       final List<ProductModel> productModel =
@@ -45,36 +45,37 @@ class ProductRepositoryImpl extends ProductRepository {
   }
 
   @override
-  Future<Either<Failure, List<ProductEntity>>> getFavoriteProducts() async {
+  Future<Either<LocalFailure, List<ProductEntity>>>
+      getFavoriteProducts() async {
     try {
-      final productModel = productsLocalService.getFavoriteProducts();
+      final productModel = await productsLocalService.getFavoriteProducts();
       final List<ProductEntity> products =
           productModel.map((model) => model.toEntity()).toList();
       return Right(products);
     } catch (e) {
-      return Left(ServerFailure());
+      return Left(LocalFailure());
     }
   }
 
   @override
-  Future<Either<Failure, void>> removeFavoriteProduct(int id) async {
+  Future<Either<LocalFailure, void>> removeFavoriteProduct(int id) async {
     try {
-      productsLocalService.removeFavoriteProduct(id);
+      await productsLocalService.removeFavoriteProduct(id);
       return Right(null);
     } catch (e) {
-      return Left(ServerFailure());
+      return Left(LocalFailure());
     }
   }
 
   @override
-  Future<Either<Failure, void>> saveFavoriteProduct(
+  Future<Either<LocalFailure, void>> saveFavoriteProduct(
       ProductEntity product) async {
     try {
       final productModel = ProductModel.fromEntity(product);
       productsLocalService.saveFavoriteProduct(productModel);
       return Right(null);
     } catch (e) {
-      return Left(ServerFailure());
+      return Left(LocalFailure());
     }
   }
 }
