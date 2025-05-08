@@ -1,3 +1,4 @@
+import 'package:burningbros_test/core/errors/server_exception.dart';
 import 'package:burningbros_test/features/products/data/data_sources/local/products_local_service.dart';
 import 'package:burningbros_test/features/products/data/models/product.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,7 +29,7 @@ void main() {
       //   arrange
       when(mockBox.values).thenAnswer((_) => tProductList);
       //   act
-      final result = dataSource.getFavoriteProducts();
+      final result = await dataSource.getFavoriteProducts();
       //   assert
       expect(result, tProductList);
       verify(mockBox.values).called(1);
@@ -67,16 +68,16 @@ void main() {
 
   test(
     'should not delete anything if product with id is not found',
-    () {
+    () async {
       // Arrange
       when(mockBox.keys).thenReturn([0]);
       when(mockBox.get(0)).thenReturn(tProduct);
 
       // Act
-      dataSource.removeFavoriteProduct(999);
+      call() => dataSource.removeFavoriteProduct(999);
 
       // Assert
-      verifyNever(mockBox.delete(any));
+      expect(call, throwsA(isA<LocalException>()));
     },
   );
 }
